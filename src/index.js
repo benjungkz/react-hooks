@@ -1,19 +1,51 @@
 import React, { useState } from 'react';
 import ReactDOM from 'react-dom';
 
-const App = () => {
+
+// Custom Hook
+const useInput = ( initialValue, validator ) => {
+
   // Hook
-  const [ item, setItem ] = useState(1);
+  const [ value, setValue ] = useState( initialValue );
 
-  const countUpItem = () => setItem( item + 1 );
-  const countDownItem = () => setItem( item - 1 );
+  // Handler
+  const onChange = event => {
+    
+    // Value
+    const {
+      target: { value }
+    } = event;
 
+    // Validation
+    let willUpdate = true;
+    if( typeof validator === "function"){
+      willUpdate = validator( value );
+    }
+
+    // Set (update)
+    if( willUpdate ){
+      setValue(value);
+    }
+
+  }
+
+  // Return value (object)
+  return { value, onChange }
+
+};
+
+const App = () => {
+  
+  // Use Custom Hook
+  const maxLen = value => value.length <= 10;
+  const name = useInput('Mr. ', maxLen);
+
+  // Render
   return(
     <div className="App">
       <h2>1,2,3 I Like to count, Count with me!!</h2>
-      <h1>{ item }</h1>
-      <button onClick={ countUpItem }>UP</button>
-      <button onClick={ countDownItem }>DOWN</button>
+      <input type="text" {...name}/>
+      {/* <input type="text" value={ name.value } onChange={ name.onChange }/> */}
     </div>
   );
 }
