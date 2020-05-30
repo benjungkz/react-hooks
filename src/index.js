@@ -1,51 +1,51 @@
 import React, { useState } from 'react';
 import ReactDOM from 'react-dom';
 
+// Data
+const content = [
+  {
+    tab: "Section 1",
+    content: "I'm the content of the Section 1"
+  },
+  {
+    tab: "Section 2",
+    content: "I'm the content of the Section 2"
+  }
+];
 
-// Custom Hook
-const useInput = ( initialValue, validator ) => {
-
+// Custome Hook
+const useTabs = ( initialTab, allTabs ) => {
+  
   // Hook
-  const [ value, setValue ] = useState( initialValue );
+  const [ currentIndex, setCurrentIndex ] = useState(initialTab);
 
-  // Handler
-  const onChange = event => {
-    
-    // Value
-    const {
-      target: { value }
-    } = event;
-
-    // Validation
-    let willUpdate = true;
-    if( typeof validator === "function"){
-      willUpdate = validator( value );
-    }
-
-    // Set (update)
-    if( willUpdate ){
-      setValue(value);
-    }
-
+  // Exception
+  if( !allTabs || !Array.isArray(allTabs)){
+    return;
   }
 
-  // Return value (object)
-  return { value, onChange }
-
-};
+  return [
+    allTabs[currentIndex],
+    setCurrentIndex
+  ];
+}
 
 const App = () => {
   
   // Use Custom Hook
-  const maxLen = value => value.length <= 10;
-  const name = useInput('Mr. ', maxLen);
+  const [ currentItem, setCurrentItemIndex ] = useTabs( 0, content );
 
   // Render
   return(
     <div className="App">
-      <h2>1,2,3 I Like to count, Count with me!!</h2>
-      <input type="text" {...name}/>
-      {/* <input type="text" value={ name.value } onChange={ name.onChange }/> */}
+      {content.map( ( section, index ) => (
+        <button onClick={ () => setCurrentItemIndex(index) }>{ section.tab }</button>
+      ))}
+      <div>
+        <p>
+          { currentItem.content }
+        </p>
+      </div>
     </div>
   );
 }
